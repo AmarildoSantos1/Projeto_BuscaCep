@@ -24,3 +24,31 @@ def buscar_endereco(cep: str) -> dict | None:
     except requests.RequestException:
         # Captura erros de conexão, timeout, etc.
         return None
+
+
+def formatar_endereco_completo(cep: str) -> str | None:
+    """
+    Retorna o endereço formatado no padrão:
+    Logradouro, Bairro - Cidade/UF
+
+    Exemplo:
+    >>> formatar_endereco_completo("01001000")
+    'Praça da Sé, Sé - São Paulo/SP'
+
+    Retorna None se o CEP for inválido ou não encontrado.
+    """
+    endereco = buscar_endereco(cep)
+
+    if not endereco:
+        return None
+
+    logradouro = endereco.get("logradouro")
+    bairro = endereco.get("bairro")
+    localidade = endereco.get("localidade")
+    uf = endereco.get("uf")
+
+    # Se algum dado essencial estiver faltando, retorna None
+    if not (logradouro and bairro and localidade and uf):
+        return None
+
+    return f"{logradouro}, {bairro} - {localidade}/{uf}"
